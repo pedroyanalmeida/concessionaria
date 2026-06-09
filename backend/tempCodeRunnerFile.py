@@ -1,1 +1,1 @@
-  # val = (cpf, nome, endereco, telefone)
+atributos

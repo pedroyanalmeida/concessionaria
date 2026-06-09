@@ -55,13 +55,13 @@ if n>0 and n <= len(tabelas):
             mycursor.execute(f"SHOW COLUMNS FROM {tabela}")
             atributos = mycursor.fetchall()
 
-            for n in range(len(atributos)):
-                print(f"{n+1}-"+atributos[n][0])
+            for n in range(1,len(atributos)):
+                print(f"{n}-"+atributos[n][0])
             
             atri = int(input("Qual atributo deseja Renomear: "))
 
             if atri > 0 and atri <= len(atributos):
-                coluna = atributos[atri-1][0]
+                coluna = atributos[atri][0]
                 
                 nome = str(input("Qual outro nome: "))
                 
