@@ -11,6 +11,7 @@ def cadastrar():
                         Telefone VARCHAR(100) NOT NULL 
                         ) ENGINE = InnoDB""")
         
+        
         mycursor.execute("""CREATE TABLE IF NOT EXISTS Vendedor(
                         CPF VARCHAR(45) NOT NULL PRIMARY KEY,
                         Nome VARCHAR(100) NOT NULL,
