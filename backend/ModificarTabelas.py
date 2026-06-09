@@ -25,6 +25,7 @@ if n>0 and n <=len(tabelas):
             if tipo == "VARCHAR":
                 tam = str(input("Qual tamanho do VARCHAR? "))
                 tipo += f"({tam})"
+            
             sqlAdd = f"ALTER TABLE {tabela} ADD {atri} {tipo}"
             mycursor.execute(sqlAdd)
 
@@ -43,8 +44,6 @@ if n>0 and n <=len(tabelas):
                 coluna = atributos[atri][0]
                 sqlDrop = f"ALTER TABLE {tabela} DROP COLUMN {coluna}"
                 mycursor.execute(sqlDrop)
-                
-        
         else:
             mycursor.execute(f"SHOW COLUMNS FROM {tabela}")
             atributos = mycursor.fetchall()
@@ -61,6 +60,8 @@ if n>0 and n <=len(tabelas):
                 
                 sqlRename = f"ALTER TABLE {tabela} RENAME COLUMN {coluna} TO {nome}"
                 mycursor.execute(sqlRename)
-        mydb.commit()
         
     elif op == 2:
+        mycursor.execute(f"DROP TABLE {tabela}")
+    
+    mydb.commit()
