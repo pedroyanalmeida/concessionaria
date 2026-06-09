@@ -15,17 +15,16 @@ def cadastrar():
                         CPF VARCHAR(45) NOT NULL PRIMARY KEY,
                         Nome VARCHAR(100) NOT NULL,
                         Senha VARCHAR(100) NOT NULL,
-                        Telefone VARCHAR(100) NOT NULL,
                         Login VARCHAR(100) NOT NULL
                         ) ENGINE = InnoDB""")
         
         mycursor.execute("""CREATE TABLE IF NOT EXISTS Venda(
                         NumVenda INT NOT NULL PRIMARY KEY,
-                        Data DATE NOT NULL,
-                        Valor FLOAT NOT NULL,
+                        DataVenda VARCHAR(45) NOT NULL,
+                        Valor VARCHAR(45) NOT NULL,
                         ClienteCPF VARCHAR(45) NOT NULL,
-                        NumeroParcelas INT NOT NULL,
-                        TaxaJuros FLOAT NOT NULL,
+                        NumeroParcelas VARCHAR(45) NOT NULL,
+                        TaxaJuros VARCHAR(45) NOT NULL,
                         VendedorCPF VARCHAR(45) NOT NULL,
 
                         INDEX fk_VENDA_Cliente_idx (ClienteCPF ASC),
@@ -53,16 +52,14 @@ def cadastrar():
         
         mycursor.execute("""CREATE TABLE IF NOT EXISTS Estoque(
                         NumEstoque INT NOT NULL PRIMARY KEY,
-                        QuantidadeCarros INT NOT NULL,
+                        QuantidadeCarros VARCHAR(45) NOT NULL,
                         Localizacao VARCHAR(100) NOT NULL
                         ) ENGINE = InnoDB""")
         
         mycursor.execute("""CREATE TABLE IF NOT EXISTS Modelo(
                         IDModelo INT NOT NULL PRIMARY KEY,
                         Nome VARCHAR(100) NOT NULL,
-                        AnoModelo INT NOT NULL,
-                        CNPJ VARCHAR(45) NOT NULL,
-                        
+                        AnoModelo VARCHAR(45) NOT NULL,                        
                         INDEX fk_Modelo_Marca1_idx (CNPJ ASC),
                         
                         CONSTRAINT fk_Modelo_Marca1
@@ -75,10 +72,10 @@ def cadastrar():
         mycursor.execute("""CREATE TABLE IF NOT EXISTS Carros(
                         Chasse VARCHAR(45) NOT NULL PRIMARY KEY,
                         Cor VARCHAR(45) NOT NULL,
-                        Preco FLOAT NOT NULL,
-                        NumVenda INT NOT NULL,
-                        NumEstoque INT NOT NULL,
-                        IDModelo INT NOT NULL,
+                        Preco VARCHAR(45) NOT NULL,
+                        NumVenda VARCHAR(45) NOT NULL,
+                        NumEstoque VARCHAR(45) NOT NULL,
+                        IDModelo VARCHAR(45) NOT NULL,
                         
                         INDEX fk_Carros_Venda1_idx (NumVenda ASC),
                         INDEX fk_Carros_Estoque1_idx (NumEstoque ASC),
