@@ -10,6 +10,7 @@ def conectar():
         password="$Xilipefe123",
         database="agenciacarros"
         )
+        mydb.autocommit = True
         return mydb
     except:
         print("Erro de conecatar o banco")
