@@ -45,8 +45,7 @@ def cadastrar():
         
         mycursor.execute("""CREATE TABLE IF NOT EXISTS Marca(
                         CNPJ VARCHAR(45) NOT NULL PRIMARY KEY,
-                        Nome VARCHAR(100) NOT NULL,
-                        PaisOrigem VARCHAR(100) NOT NULL
+                        Nome VARCHAR(100) NOT NULL
                         ) ENGINE=InnoDB""")
         
         mycursor.execute("""CREATE TABLE IF NOT EXISTS Estoque(
@@ -69,7 +68,7 @@ def cadastrar():
                         )ENGINE = InnoDB""")
 
         mycursor.execute("""CREATE TABLE IF NOT EXISTS Carros(
-                        Chasse VARCHAR(45) NOT NULL PRIMARY KEY,
+                        Chassi VARCHAR(45) NOT NULL PRIMARY KEY,
                         Cor VARCHAR(45) NOT NULL,
                         Preco VARCHAR(45) NOT NULL,
                         NumVenda VARCHAR(45) NOT NULL,
