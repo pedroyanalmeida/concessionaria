@@ -23,7 +23,7 @@ def cadastrar():
                         DataVenda VARCHAR(45) NOT NULL,
                         Valor VARCHAR(45) NOT NULL,
                         ClienteCPF VARCHAR(45) NOT NULL,
-                        NumeroParcelas VARCHAR(45) NOT NULL,
+                        NumParcelas VARCHAR(45) NOT NULL,
                         VendedorCPF VARCHAR(45) NOT NULL,
 
                         INDEX fk_VENDA_Cliente_idx (ClienteCPF ASC),
