@@ -23,8 +23,7 @@ def cadastrar():
                         DataVenda VARCHAR(45) NOT NULL,
                         Valor VARCHAR(45) NOT NULL,
                         ClienteCPF VARCHAR(45) NOT NULL,
-                        NumeroParcelas VARCHAR(45) NOT NULL,
-                        TaxaJuros VARCHAR(45) NOT NULL,
+                        NumParcelas VARCHAR(45) NOT NULL,
                         VendedorCPF VARCHAR(45) NOT NULL,
 
                         INDEX fk_VENDA_Cliente_idx (ClienteCPF ASC),
@@ -46,8 +45,7 @@ def cadastrar():
         
         mycursor.execute("""CREATE TABLE IF NOT EXISTS Marca(
                         CNPJ VARCHAR(45) NOT NULL PRIMARY KEY,
-                        Nome VARCHAR(100) NOT NULL,
-                        PaisOrigem VARCHAR(100) NOT NULL
+                        Nome VARCHAR(100) NOT NULL
                         ) ENGINE=InnoDB""")
         
         mycursor.execute("""CREATE TABLE IF NOT EXISTS Estoque(
@@ -70,7 +68,7 @@ def cadastrar():
                         )ENGINE = InnoDB""")
 
         mycursor.execute("""CREATE TABLE IF NOT EXISTS Carros(
-                        Chasse VARCHAR(45) NOT NULL PRIMARY KEY,
+                        Chassi VARCHAR(45) NOT NULL PRIMARY KEY,
                         Cor VARCHAR(45) NOT NULL,
                         Preco VARCHAR(45) NOT NULL,
                         NumVenda VARCHAR(45) NOT NULL,
