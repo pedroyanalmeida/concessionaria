@@ -1,12 +1,12 @@
 import conexaoBD
 
-def Estoque(op):
+def Carros(op):
     try:
         mydb = conexaoBD.conectar()
         mycursor = mydb.cursor()
         
         if op == 1:
-            mycursor.execute(f"SHOW COLUMNS FROM Estoque")
+            mycursor.execute(f"SHOW COLUMNS FROM Carros")
             atributos = mycursor.fetchall()
 
             colunas = ""
@@ -17,7 +17,7 @@ def Estoque(op):
 
             placeholders = ", ".join(["%s"] * len(atributos))
 
-            sqlInsert = f"INSERT INTO Estoque ({colunas}) VALUES ({placeholders})" 
+            sqlInsert = f"INSERT INTO Carros ({colunas}) VALUES ({placeholders})" 
 
             colunas = colunas.split(",")
 
@@ -27,31 +27,31 @@ def Estoque(op):
                 val += (value,)
 
             mycursor.execute(sqlInsert, val)
-            print("Estoque cadastrado com sucesso!")
+            print("Carro cadastrado com sucesso!")
 
-        elif op == 2: 
-            print("Listando todos os estoques:")
+        elif op == 2:
+            print("Listando todos os carros:")
             
-            mycursor.execute("SELECT * FROM Estoque")
+            mycursor.execute("SELECT * FROM Carros")
             myresult = mycursor.fetchall()
     
             for n in range(len(myresult)):
-                print(f"estoque{n+1}: {myresult[n]}")
+                print(f"carro{n+1}: {myresult[n]}")
 
-            n = int(input("Escolha um estoque para fazer alteração: "))
+            n = int(input("Escolha um carro para fazer alteração: "))
             
             if n > 0 and n <= len(myresult):
-                estoque = myresult[n-1]
-                num_estoque = estoque[0]
+                carro = myresult[n-1]
+                chassi = carro[0]
 
                 print("=" * 40)
-                print("      ALTERAÇÃO DE ESTOQUE")
+                print("      ALTERAÇÃO DE CARRO")
                 print("=" * 40)
 
-                for at in estoque:
+                for at in carro:
                     print(at,"\n")
                 
-                mycursor.execute(f"SHOW COLUMNS FROM Estoque")
+                mycursor.execute(f"SHOW COLUMNS FROM Carros")
                 atributos = mycursor.fetchall()
 
                 for n in range(1, len(atributos)):
@@ -64,40 +64,43 @@ def Estoque(op):
 
                     mudar = str(input(f"{coluna}: "))
 
-                    sqlUpdate = f"UPDATE Estoque SET {coluna} = '{mudar}' WHERE Num_estoque = '{num_estoque}'"
+                    sqlUpdate = f"UPDATE Carros SET {coluna} = '{mudar}' WHERE Chassi = '{chassi}'"
                     mycursor.execute(sqlUpdate)
-                    print("Estoque atualizado com sucesso!")
+                    print("Carro atualizado com sucesso!")
 
-        elif op == 3:  
-            print("Listando todos os estoques:")
+        elif op == 3:
+            print("Listando todos os carros:")
             
-            mycursor.execute("SELECT * FROM Estoque")
+            mycursor.execute("SELECT * FROM Carros")
             myresult = mycursor.fetchall()
     
             for n in range(len(myresult)):
-                print(f"estoque{n+1}: {myresult[n]}")
+                print(f"carro{n+1}: {myresult[n]}")
 
-            n = int(input("Escolha um estoque para ser apagado no sistema: "))
+            n = int(input("Escolha um carro para ser apagado no sistema: "))
             
             if n > 0 and n <= len(myresult):
-                estoque = myresult[n-1]
-                num_estoque = estoque[0]
-                quantidade = estoque[1]
-                localizacao = estoque[2]
+                carro = myresult[n-1]
+                chassi = carro[0]
+                cor = carro[1]
+                preco = carro[2]
+                venda_num = carro[3]
+                estoque_num = carro[4]
+                modelo_id = carro[5]
 
                 print("=" * 40)
-                print("      DELETANDO ESTOQUE")
+                print("      DELETANDO CARRO")
                 print("=" * 40)
 
-                print(f"1 - Número do estoque: {num_estoque}\n2 - Quantidade: {quantidade}\n3 - Localização: {localizacao}")
+                print(f"1 - Chassi: {chassi}\n2 - Cor: {cor}\n3 - Preço: {preco}\n4 - N° Venda: {venda_num}\n5 - N° Estoque: {estoque_num}\n6 - ID Modelo: {modelo_id}")
                 
                 confirma = str(input("Confirma[S/N]: "))
                 if confirma in 'Ss':
-                    sqlDelete = f"DELETE FROM Estoque WHERE Num_estoque = '{num_estoque}'"
+                    sqlDelete = f"DELETE FROM Carros WHERE Chassi = '{chassi}'"
                     mycursor.execute(sqlDelete)
-                    print("Estoque deletado com sucesso!")
+                    print("Carro deletado com sucesso!")
         
         mydb.commit()
         
     except Exception as e:
-        print(f"Erro no estoque: {e}")
+        print(f"Erro no carro: {e}")
