@@ -5,10 +5,10 @@ def conectar():
     try:
         criarBD.criar()
         mydb = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="$Xilipefe123",
-        database="agenciacarros"
+            host="localhost",
+            user="root",
+            password="$Xilipefe123",
+            database="agenciacarros"
         )
         mydb.autocommit = True
         return mydb

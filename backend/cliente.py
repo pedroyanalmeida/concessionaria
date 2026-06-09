@@ -11,28 +11,31 @@ def Listar_Cliente():
     
     return myresult
 
-def Cadastrar_Cliente():
-        mycursor.execute(f"SHOW COLUMNS FROM Cliente")
-        atributos = mycursor.fetchall()
+def Atributos_Cliente():
+    mycursor.execute(f"SHOW COLUMNS FROM Cliente")
+    atributos = mycursor.fetchall()
 
-        colunas = ""
-        for n in range(len(atributos)):
-            colunas += atributos[n][0]
-            if n < len(atributos)-1:
-                colunas += ","
+    colunas = ""
+    for n in range(len(atributos)):
+        colunas += atributos[n][0]
+        if n < len(atributos)-1:
+            colunas += ","
+    return colunas
 
-        placeholders = ",".join(["%s"] * len(atributos))
+def Cadastrar_Cliente(): 
+    colunas = Atributos_Cliente()
+    placeholders = ",".join(["%s"] * len(atributos))
 
-        sqlInsert = f"INSERT INTO Cliente ({colunas}) VALUES ({placeholders})" 
+    sqlInsert = f"INSERT INTO Cliente ({colunas}) VALUES ({placeholders})" 
 
-        colunas = colunas.split(",")
+    colunas = colunas.split(",")
 
-        val = tuple()
-        for n in range(len(colunas)):
-            value = str(input(f"{colunas[n]}: "))
-            val += (value,)
+    val = tuple()
+    for n in range(len(colunas)):
+        value = str(input(f"{colunas[n]}: "))
+        val += (value,)
 
-        mycursor.execute(sqlInsert, val)
+    mycursor.execute(sqlInsert, val)
 
 def Update_Cliente():
     myresult = Listar_Cliente()
