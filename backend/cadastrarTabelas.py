@@ -19,7 +19,7 @@ def cadastrar():
                         ) ENGINE = InnoDB""")
         
         mycursor.execute("""CREATE TABLE IF NOT EXISTS Venda(
-                        NumVenda INT NOT NULL PRIMARY KEY,
+                        NumVenda INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
                         DataVenda VARCHAR(45) NOT NULL,
                         Valor VARCHAR(45) NOT NULL,
                         ClienteCPF VARCHAR(45) NOT NULL,
@@ -58,6 +58,7 @@ def cadastrar():
                         IDModelo INT NOT NULL PRIMARY KEY,
                         Nome VARCHAR(100) NOT NULL,
                         AnoModelo VARCHAR(45) NOT NULL,                        
+                        
                         INDEX fk_Modelo_Marca1_idx (CNPJ ASC),
                         
                         CONSTRAINT fk_Modelo_Marca1
