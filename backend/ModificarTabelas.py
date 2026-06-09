@@ -12,13 +12,14 @@ for n in range(len(tabelas)):
 
 n = int(input("Escolha um Tabela para fazer alteração: "))
 
-if n>0 and n <=len(tabelas):
+if n>0 and n <= len(tabelas):
     tabela = tabelas[n-1][0]
     
-    op = int(input("Qal opção você deseja(1-ALTER|2-DROP): "))
+    op = int(input("Qual opção você deseja (1-ALTER|2-DROP): "))
     
     if op == 1:
-        esc = int(input("Que tipo de alteração(1-ADD|2-DROP|3-RENAME): ").upper())
+        esc = int(input("Que tipo de alteração (1-ADD|2-DROP|3-RENAME): "))
+        
         if esc == 1:
             atri = str(input("Qual atributo? "))
             tipo = str(input("Qual o tipo? ").upper())
@@ -28,6 +29,7 @@ if n>0 and n <=len(tabelas):
             
             sqlAdd = f"ALTER TABLE {tabela} ADD {atri} {tipo}"
             mycursor.execute(sqlAdd)
+            print(f"Atributo {atri} adicionado com sucesso!")
 
         elif esc == 2:
             print("Listando os Atributos: ")
@@ -35,33 +37,53 @@ if n>0 and n <=len(tabelas):
             mycursor.execute(f"SHOW COLUMNS FROM {tabela}")
             atributos = mycursor.fetchall()
 
-            for n in range(1,len(atributos)):
-                print(f"{n}-"+atributos[n][0])
+
+            for n in range(len(atributos)):
+                print(f"{n+1}-"+atributos[n][0])
 
             atri = int(input("Qual atributo deseja excluir: "))
 
-            if atri > 0 and atri<len(atributos):
-                coluna = atributos[atri][0]
+            if atri > 0 and atri <= len(atributos):
+                coluna = atributos[atri-1][0]
                 sqlDrop = f"ALTER TABLE {tabela} DROP COLUMN {coluna}"
                 mycursor.execute(sqlDrop)
-        else:
+                print(f"Atributo {coluna} removido com sucesso!")
+            else:
+                print("Opção inválida!")
+                
+        elif esc == 3:
             mycursor.execute(f"SHOW COLUMNS FROM {tabela}")
             atributos = mycursor.fetchall()
 
-            for n in range(0,len(atributos)):
+            for n in range(len(atributos)):
                 print(f"{n+1}-"+atributos[n][0])
             
             atri = int(input("Qual atributo deseja Renomear: "))
 
-            if atri > 0 and atri <=len(atributos):
+            if atri > 0 and atri <= len(atributos):
                 coluna = atributos[atri-1][0]
                 
                 nome = str(input("Qual outro nome: "))
                 
                 sqlRename = f"ALTER TABLE {tabela} RENAME COLUMN {coluna} TO {nome}"
                 mycursor.execute(sqlRename)
+                print(f"Atributo {coluna} renomeado para {nome} com sucesso!")
+            else:
+                print("Opção inválida!")
+        else:
+            print("Opção inválida!")
         
     elif op == 2:
-        mycursor.execute(f"DROP TABLE {tabela}")
+        confirmar = input(f"Tem certeza que deseja excluir a tabela {tabela}? (s/n): ")
+        if confirmar.lower() == 's':
+            mycursor.execute(f"DROP TABLE {tabela}")
+            print(f"Tabela {tabela} excluída com sucesso!")
+        else:
+            print("Operação cancelada!")
+    else:
+        print("Opção inválida!")
     
     mydb.commit()
+    print("Alterações salvas!")
+else:
+    print("Tabela inválida!")
