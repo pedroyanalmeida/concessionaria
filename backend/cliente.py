@@ -1,4 +1,5 @@
 import conexaoBD
+
 mydb = conexaoBD.conectar()
 mycursor = mydb.cursor()
 
@@ -6,85 +7,57 @@ def Listar_Cliente():
     mycursor.execute("SELECT * FROM Cliente")
     myresult = mycursor.fetchall()
     
-    for n in range(len(myresult)):
-        print(f"cliente{n+1}: {myresult[n]}")
-    
     return myresult
 
+def Printar_Clientes():
+    clientes = Listar_Cliente()
+    for n in range(len(clientes)):
+        print(f"{n+1}- {clientes[n]}")
+
 def Atributos_Cliente():
-    mycursor.execute(f"SHOW COLUMNS FROM Cliente")
+    mycursor.execute("SHOW COLUMNS FROM Cliente")
     atributos = mycursor.fetchall()
 
-    colunas = ""
+    colunas = []
     for n in range(len(atributos)):
-        colunas += atributos[n][0]
-        if n < len(atributos)-1:
-            colunas += ","
+        colunas.append(atributos[n][0])
+    
     return colunas
 
-def Cadastrar_Cliente(): 
-    colunas = Atributos_Cliente()
-    placeholders = ",".join(["%s"] * len(atributos))
+def Printar_Atributos():
+    clientes = Atributos_Cliente()
+    for n in range(len(clientes)):
+        print(f"{n+1}- {clientes[n]}")
 
-    sqlInsert = f"INSERT INTO Cliente ({colunas}) VALUES ({placeholders})" 
+def Cadastrar_Cliente(valores): 
+    colunas_lista = Atributos_Cliente()
+    colunas_string = ",".join(colunas_lista)
+    
+    placeholders = ",".join(["%s"] * len(colunas_lista))
 
-    colunas = colunas.split(",")
+    sqlInsert = f"INSERT INTO Cliente ({colunas_string}) VALUES ({placeholders})"
 
-    val = tuple()
-    for n in range(len(colunas)):
-        value = str(input(f"{colunas[n]}: "))
-        val += (value,)
+    mycursor.execute(sqlInsert, valores)
 
-    mycursor.execute(sqlInsert, val)
-
-def Update_Cliente():
+def Update_Cliente(Cliente_posi, atributo_posi, novo_valor):
     myresult = Listar_Cliente()
-    n = int(input("Escolha um cliente para fazer alteração: "))
             
-    if n > 0 and n <= len(myresult):
-        cliente = myresult[n-1]
+    if Cliente_posi > 0 and Cliente_posi <= len(myresult):
+        cliente = myresult[Cliente_posi-1]
         cpf = cliente[0]
 
-        print("=" * 40)
-        print("      ALTERAÇÃO DE CLIENTE")
-        print("=" * 40)
+        atributos = Atributos_Cliente()
 
-        for at in cliente:
-            print(at)
-                
-        print("=" * 40)
-                
-        mycursor.execute(f"SHOW COLUMNS FROM Cliente")
-        atributos = mycursor.fetchall()
+        if atributo_posi > 0 and atributo_posi<=len(atributos):
+            coluna = atributos[atributo_posi-1]
+            sqlUpdate = f"UPDATE Cliente SET {coluna} = %s WHERE CPF =%s"
+            mycursor.execute(sqlUpdate,(novo_valor, cpf))
 
-        for n in range(len(atributos)):
-            print(f"{n+1}-"+atributos[n][0])
-                
-        atri = int(input("Qual atributo deseja excluir: "))
-
-        if atri > 0 and atri<=len(atributos):
-            coluna = atributos[atri-1][0]
-
-            mudar = str(input(f"{coluna}: "))
-
-            sqlUpdate = f"UPDATE Cliente SET {coluna} = '{mudar}' WHERE CPF ='{cpf}'"
-            mycursor.execute(sqlUpdate)
-
-def Delet_Cliente():
+def Delet_Cliente(Cliente_posi):
     myresult = Listar_Cliente()
-    n = int(input("Escolha um cliente para ser apagado no sistema: "))
             
-    if n > 0 and n <= len(myresult):
-        cliente = myresult[n-1]
+    if Cliente_posi > 0 and Cliente_posi <= len(myresult):
+        cliente = myresult[Cliente_posi-1]
         cpf = cliente[0]
-
-        print("=" * 40)
-        print("      DELETANDO CLIENTE")
-        print("=" * 40)
-                
-        confirma = str(input("Confirma[S/N]: "))
-        if confirma in 'Ss':
-            sqlDelete = f"DELETE FROM Cliente WHERE CPF = '{cpf}'"
-            mycursor.execute(sqlDelete)
-
-Delet_Cliente()
+        sqlDelete = f"DELETE FROM Cliente WHERE CPF = '{cpf}'"
+        mycursor.execute(sqlDelete)
