@@ -25,12 +25,6 @@ def Cliente(op):
                 value = str(input(f"{colunas[n]}: "))
                 val += (value,)
 
-            # cpf = str(input("CPF: "))
-            # nome = str(input("Nome: "))
-            # endereco = str(input("Endereço: "))
-            # telefone = str(input("Telefone: "))
-            
-            # val = (cpf, nome, endereco, telefone)
             mycursor.execute(sqlInsert, val)
 
         elif op == 2:
@@ -46,42 +40,29 @@ def Cliente(op):
             
             if n > 0 and n <= len(myresult):
                 cliente = myresult[n-1]
+                cpf = cliente[0]
 
                 print("=" * 40)
                 print("      ALTERAÇÃO DE CLIENTE")
                 print("=" * 40)
 
                 for at in cliente:
-                    print(at,"\n")
-
-                # print(f"1 - CPF      : {cpf}\n2 - Nome     : {nome}\n3 - Endereço : {endereco}\n4 - Telefone : {telefone}")
+                    print(at)
                 
-                # opcao = int(input("Campo para alterar: "))
+                print("=" * 40)
                 
                 mycursor.execute(f"SHOW COLUMNS FROM Cliente")
                 atributos = mycursor.fetchall()
 
-                for n in range(1,len(atributos)):
-                    print(f"{n}-"+atributos[n][0])
+                for n in range(len(atributos)):
+                    print(f"{n+1}-"+atributos[n][0])
                 
                 atri = int(input("Qual atributo deseja excluir: "))
 
-                if atri > 0 and atri<len(atributos):
-                    coluna = atributos[atri][0]
+                if atri > 0 and atri<=len(atributos):
+                    coluna = atributos[atri-1][0]
 
                     mudar = str(input(f"{coluna}: "))
-                # escolha = "CPF"
-                # if opcao == 1:
-                #     mudar = str(input("CPF: "))
-                # elif opcao == 2:
-                #     mudar = str(input("Nome: "))
-                #     escolha = "Nome"
-                # elif opcao == 3:
-                #     mudar = str(input("Endereco: "))
-                #     escolha = "Endereco"
-                # else:
-                #     mudar = str(input("Telefone: "))
-                #     escolha = "Telefone"
 
                     sqlUpdate = f"UPDATE Cliente SET {coluna} = '{mudar}' WHERE CPF ='{cpf}'"
                     mycursor.execute(sqlUpdate)

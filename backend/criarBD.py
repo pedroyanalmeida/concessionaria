@@ -10,7 +10,6 @@ def criar():
         )
 
         mycurso = mydb.cursor()
-
         mycurso.execute("CREATE DATABASE IF NOT EXISTS agenciacarros")
     except:
         print("Erro ao criar o banco")
