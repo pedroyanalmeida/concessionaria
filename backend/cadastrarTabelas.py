@@ -20,7 +20,7 @@ def cadastrar():
                         ) ENGINE = InnoDB""")
         
         mycursor.execute("""CREATE TABLE IF NOT EXISTS Venda(
-                        NumVenda INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+                        NumVenda VARCHAR(45) NOT NULL PRIMARY KEY,
                         DataVenda VARCHAR(45) NOT NULL,
                         Valor VARCHAR(45) NOT NULL,
                         ClienteCPF VARCHAR(45) NOT NULL,
@@ -33,13 +33,13 @@ def cadastrar():
                         CONSTRAINT fk_VENDA_Cliente
                             FOREIGN KEY (ClienteCPF)
                             REFERENCES Cliente (CPF)
-                            ON DELETE NO ACTION
+                            ON DELETE CASCADE
                             ON UPDATE NO ACTION,
 
                         CONSTRAINT fk_VENDA_Vendedor1
                             FOREIGN KEY (VendedorCPF)
                             REFERENCES Vendedor (CPF)
-                            ON DELETE NO ACTION
+                            ON DELETE CASCADE
                             ON UPDATE NO ACTION
                     ) ENGINE=InnoDB
                     """)
@@ -50,22 +50,22 @@ def cadastrar():
                         ) ENGINE=InnoDB""")
         
         mycursor.execute("""CREATE TABLE IF NOT EXISTS Estoque(
-                        NumEstoque INT NOT NULL PRIMARY KEY,
+                        NumEstoque VARCHAR(45) NOT NULL PRIMARY KEY,
                         QuantidadeCarros VARCHAR(45) NOT NULL,
                         Localizacao VARCHAR(100) NOT NULL
                         ) ENGINE = InnoDB""")
         
         mycursor.execute("""CREATE TABLE IF NOT EXISTS Modelo(
-                        IDModelo INT NOT NULL PRIMARY KEY,
+                        IDModelo VARCHAR(45) NOT NULL PRIMARY KEY,
                         Nome VARCHAR(100) NOT NULL,
                         AnoModelo VARCHAR(45) NOT NULL,                        
-                        
+                        CNPJ VARCHAR(45) NOT NULL,
                         INDEX fk_Modelo_Marca1_idx (CNPJ ASC),
                         
                         CONSTRAINT fk_Modelo_Marca1
                             FOREIGN KEY (CNPJ)
                             REFERENCES Marca (CNPJ)
-                            ON DELETE NO ACTION
+                            ON DELETE CASCADE
                             ON UPDATE NO ACTION
                         )ENGINE = InnoDB""")
 
@@ -84,20 +84,22 @@ def cadastrar():
                         CONSTRAINT fk_Carros_Venda1
                             FOREIGN KEY (NumVenda)
                             REFERENCES Venda (NumVenda)
-                            ON DELETE NO ACTION
+                            ON DELETE CASCADE
                             ON UPDATE NO ACTION,
                         
                         CONSTRAINT fk_Carros_Estoque1
                             FOREIGN KEY (NumEstoque)
                             REFERENCES Estoque (NumEstoque)
-                            ON DELETE NO ACTION
+                            ON DELETE CASCADE
                             ON UPDATE NO ACTION,
                         
                         CONSTRAINT fk_Carros_Modelo1
                             FOREIGN KEY (IDModelo)
                             REFERENCES Modelo (IDModelo)
-                            ON DELETE NO ACTION
+                            ON DELETE CASCADE
                             ON UPDATE NO ACTION
                         )ENGINE = InnoDB""")
-    except:
-        print("Erro ao cadastrar tabelas")
+    except Exception as erro:
+        print("Erro:", erro)
+
+cadastrar()

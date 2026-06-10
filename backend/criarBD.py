@@ -14,3 +14,5 @@ def criar():
     except:
         print("Erro ao criar o banco")
         return 0
+
+criar()
