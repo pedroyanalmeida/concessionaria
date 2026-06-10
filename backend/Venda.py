@@ -69,4 +69,3 @@ def Delet_Venda(Venda_posi):
 
 Printar_Atributos()
 print("===========================")
-Cadastrar_Venda(('1','10/06/2026', '5000', '11111', '18%', '1'))

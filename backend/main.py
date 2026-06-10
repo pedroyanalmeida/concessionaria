@@ -58,6 +58,7 @@ def menu_cliente():
         print("1 - Cadastrar cliente")
         print("2 - Alterar cliente")
         print("3 - Deletar cliente")
+        print("4 - Listar clientes")
         print("0 - Voltar")
         print("=" * 40)
         
@@ -71,11 +72,13 @@ def menu_cliente():
                 cliente.Cliente(2)
             elif op == 3:
                 cliente.Cliente(3)
+            elif op == 4:
+                cliente.Cliente(4)
             else:
                 print("Opção inválida!")
         except ValueError:
             print("Digite um número válido!")
-
+            
 def menu_vendedor():
     while True:
         print("\n" + "=" * 40)
