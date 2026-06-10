@@ -13,4 +13,4 @@ def conectar():
         mydb.autocommit = True
         return mydb
     except:
-        print("Erro de conecatar o banco")
+        print("Erro em conectar ao banco")
