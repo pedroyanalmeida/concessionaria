@@ -64,7 +64,7 @@ def Delet_Venda(Venda_posi):
     if Venda_posi > 0 and Venda_posi <= len(myresult):
         venda = myresult[Venda_posi-1]
         numVenda = venda[0]
-        sqlDelete = f"DELETE FROM Cliente WHERE NumVenda = '{numVenda}'"
+        sqlDelete = f"DELETE FROM Venda WHERE NumVenda = '{numVenda}'"
         mycursor.execute(sqlDelete)
 
 Printar_Atributos()
