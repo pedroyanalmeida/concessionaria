@@ -7,10 +7,10 @@ def conectar():
         mydb = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="$Xilipefe123",
+            password="",
             database="agenciacarros"
         )
         mydb.autocommit = True
         return mydb
     except:
-        print("Erro de conecatar o banco")
+        print("Erro em conectar ao banco")
