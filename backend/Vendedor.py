@@ -59,3 +59,34 @@ def Delet_Vendedor(Vendedor_posi):
         cpf = vendedor[0]
         sqlDelete = f"DELETE FROM Vendedor WHERE CPF = '{cpf}'"
         mycursor.execute(sqlDelete)
+    
+def Vendedor(op):
+    if op == 1:
+        print("\n--- CADASTRAR VENDEDOR ---")
+        atributos = Atributos_Vendedor()
+        valores = []
+        for atributo in atributos:
+            valor = input(f"{atributo}: ")
+            valores.append(valor)
+        Cadastrar_Vendedor(tuple(valores))
+        print("Vendedor cadastrado com sucesso!")
+    
+    elif op == 2:
+        print("\n--- ALTERAR VENDEDOR ---")
+        Printar_Vendedores()
+        posicao = int(input("Escolha o vendedor: "))
+        Printar_Atributos()
+        atributo = int(input("Escolha o atributo: "))
+        novo_valor = input("Novo valor: ")
+        Update_Vendedor(posicao, atributo, novo_valor)
+        print("Vendedor alterado com sucesso!")
+    
+    elif op == 3:
+        print("\n--- DELETAR VENDEDOR ---")
+        Printar_Vendedores()
+        posicao = int(input("Escolha o vendedor: "))
+        Delet_Vendedor(posicao)
+        print("Vendedor deletado com sucesso!")
+    elif op == 4:
+        print("\n--- LISTAR VENDEDORES ---")
+        Printar_Vendedores()

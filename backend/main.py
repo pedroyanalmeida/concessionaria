@@ -87,6 +87,7 @@ def menu_vendedor():
         print("1 - Cadastrar vendedor")
         print("2 - Alterar vendedor")
         print("3 - Deletar vendedor")
+        print("4 - Listar vendedores")
         print("0 - Voltar")
         print("=" * 40)
         
@@ -95,11 +96,13 @@ def menu_vendedor():
             if op == 0:
                 break
             elif op == 1:
-                vendedor.Vendedor(1)
+                Vendedor.Vendedor(1)
             elif op == 2:
-                vendedor.Vendedor(2)
+                Vendedor.Vendedor(2)
             elif op == 3:
-                vendedor.Vendedor(3)
+                Vendedor.Vendedor(3)
+            elif op == 4:
+                Vendedor.Vendedor(4)
             else:
                 print("Opção inválida!")
         except ValueError:
@@ -121,11 +124,11 @@ def menu_venda():
             if op == 0:
                 break
             elif op == 1:
-                venda.Venda(1)
+                Venda.Venda(1)
             elif op == 2:
-                venda.Venda(2)
+                Venda.Venda(2)
             elif op == 3:
-                venda.Venda(3)
+                Venda.Venda(3)
             else:
                 print("Opção inválida!")
         except ValueError:
@@ -225,11 +228,11 @@ def menu_modelo():
             if op == 0:
                 break
             elif op == 1:
-                modelo.Modelo(1)
+                model.Modelo(1)
             elif op == 2:
-                modelo.Modelo(2)
+                model.Modelo(2)
             elif op == 3:
-                modelo.Modelo(3)
+                model.Modelo(3)
             else:
                 print("Opção inválida!")
         except ValueError:
