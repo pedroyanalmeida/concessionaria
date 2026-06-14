@@ -78,6 +78,3 @@ def Drop_Tabela(tabela_posi):
     
         mycursor.execute(f"DROP TABLE IF EXISTS {tabela}")
         print(f"Tabela {tabela} excluída com sucesso!")
-
-Printar_Tabelas()
-Drop_Tabela(2)
