@@ -1,103 +1,107 @@
 import conexaoBD
 
-def Estoque(op):
-    try:
-        mydb = conexaoBD.conectar()
-        mycursor = mydb.cursor()
-        
-        if op == 1:
-            mycursor.execute(f"SHOW COLUMNS FROM Estoque")
-            atributos = mycursor.fetchall()
+def Listar_Estoque():
+    mydb = conexaoBD.conectar()
+    mycursor = mydb.cursor()
+    mycursor.execute("SELECT * FROM Estoque")
+    myresult = mycursor.fetchall()
+    mydb.close()
+    return myresult
 
-            colunas = ""
-            for n in range(len(atributos)):
-                colunas += atributos[n][0]
-                if n < len(atributos)-1:
-                    colunas += ", "
+def Printar_Estoque():
+    estoques = Listar_Estoque()
+    for n in range(len(estoques)):
+        print(f"{n+1}- {estoques[n]}")
 
-            placeholders = ", ".join(["%s"] * len(atributos))
+def Atributos_Estoque():
+    mydb = conexaoBD.conectar()
+    mycursor = mydb.cursor()
+    mycursor.execute("SHOW COLUMNS FROM Estoque")
+    atributos = mycursor.fetchall()
+    mydb.close()
+    colunas = []
+    for n in range(len(atributos)):
+        colunas.append(atributos[n][0])
+    return colunas
 
-            sqlInsert = f"INSERT INTO Estoque ({colunas}) VALUES ({placeholders})" 
+def Printar_Atributos():
+    estoques = Atributos_Estoque()
+    for n in range(len(estoques)):
+        print(f"{n+1}- {estoques[n]}")
 
-            colunas = colunas.split(",")
-
-            val = tuple()
-            for n in range(len(colunas)):
-                value = str(input(f"{colunas[n]}: "))
-                val += (value,)
-
-            mycursor.execute(sqlInsert, val)
-            print("Estoque cadastrado com sucesso!")
-
-        elif op == 2: 
-            print("Listando todos os estoques:")
-            
-            mycursor.execute("SELECT * FROM Estoque")
-            myresult = mycursor.fetchall()
+def Cadastrar_Estoque(valores): 
+    mydb = conexaoBD.conectar()
+    mycursor = mydb.cursor()
+    colunas_lista = Atributos_Estoque()
+    colunas_string = ",".join(colunas_lista)
     
-            for n in range(len(myresult)):
-                print(f"estoque{n+1}: {myresult[n]}")
+    placeholders = ",".join(["%s"] * len(colunas_lista))
 
-            n = int(input("Escolha um estoque para fazer alteração: "))
+    sqlInsert = f"INSERT INTO Estoque ({colunas_string}) VALUES ({placeholders})"
+
+    mycursor.execute(sqlInsert, valores)
+    mydb.commit()
+    mydb.close()
+
+def Update_Estoque(Estoque_posi, atributo_posi, novo_valor):
+    mydb = conexaoBD.conectar()
+    mycursor = mydb.cursor()
+    myresult = Listar_Estoque()
             
-            if n > 0 and n <= len(myresult):
-                estoque = myresult[n-1]
-                num_estoque = estoque[0]
+    if Estoque_posi > 0 and Estoque_posi <= len(myresult):
+        estoque = myresult[Estoque_posi-1]
+        num_estoque = estoque[0]
 
-                print("=" * 40)
-                print("      ALTERAÇÃO DE ESTOQUE")
-                print("=" * 40)
+        atributos = Atributos_Estoque()
 
-                for at in estoque:
-                    print(at,"\n")
-                
-                mycursor.execute(f"SHOW COLUMNS FROM Estoque")
-                atributos = mycursor.fetchall()
+        if atributo_posi > 0 and atributo_posi <= len(atributos):
+            coluna = atributos[atributo_posi-1]
+            sqlUpdate = f"UPDATE Estoque SET {coluna} = %s WHERE Num_estoque = %s"
+            mycursor.execute(sqlUpdate, (novo_valor, num_estoque))
+            mydb.commit()
+    mydb.close()
 
-                for n in range(1, len(atributos)):
-                    print(f"{n}-"+atributos[n][0])
-                
-                atri = int(input("Qual atributo deseja alterar: "))
-
-                if atri > 0 and atri < len(atributos):
-                    coluna = atributos[atri][0]
-
-                    mudar = str(input(f"{coluna}: "))
-
-                    sqlUpdate = f"UPDATE Estoque SET {coluna} = '{mudar}' WHERE Num_estoque = '{num_estoque}'"
-                    mycursor.execute(sqlUpdate)
-                    print("Estoque atualizado com sucesso!")
-
-        elif op == 3:  
-            print("Listando todos os estoques:")
+def Delet_Estoque(Estoque_posi):
+    mydb = conexaoBD.conectar()
+    mycursor = mydb.cursor()
+    myresult = Listar_Estoque()
             
-            mycursor.execute("SELECT * FROM Estoque")
-            myresult = mycursor.fetchall()
-    
-            for n in range(len(myresult)):
-                print(f"estoque{n+1}: {myresult[n]}")
-
-            n = int(input("Escolha um estoque para ser apagado no sistema: "))
-            
-            if n > 0 and n <= len(myresult):
-                estoque = myresult[n-1]
-                num_estoque = estoque[0]
-                quantidade = estoque[1]
-                localizacao = estoque[2]
-
-                print("=" * 40)
-                print("      DELETANDO ESTOQUE")
-                print("=" * 40)
-
-                print(f"1 - Número do estoque: {num_estoque}\n2 - Quantidade: {quantidade}\n3 - Localização: {localizacao}")
-                
-                confirma = str(input("Confirma[S/N]: "))
-                if confirma in 'Ss':
-                    sqlDelete = f"DELETE FROM Estoque WHERE Num_estoque = '{num_estoque}'"
-                    mycursor.execute(sqlDelete)
-                    print("Estoque deletado com sucesso!")
-        
+    if Estoque_posi > 0 and Estoque_posi <= len(myresult):
+        estoque = myresult[Estoque_posi-1]
+        num_estoque = estoque[0]
+        sqlDelete = f"DELETE FROM Estoque WHERE Num_estoque = '{num_estoque}'"
+        mycursor.execute(sqlDelete)
         mydb.commit()
-        
-    except Exception as e:
-        print(f"Erro no estoque: {e}")
+    mydb.close()
+
+def Estoque(op):
+    if op == 1:
+        print("\n--- CADASTRAR ESTOQUE ---")
+        atributos = Atributos_Estoque()
+        valores = []
+        for atributo in atributos:
+            valor = input(f"{atributo}: ")
+            valores.append(valor)
+        Cadastrar_Estoque(tuple(valores))
+        print("Estoque cadastrado com sucesso!")
+    
+    elif op == 2:
+        print("\n--- ALTERAR ESTOQUE ---")
+        Printar_Estoque()
+        posicao = int(input("Escolha o estoque: "))
+        Printar_Atributos()
+        atributo = int(input("Escolha o atributo: "))
+        novo_valor = input("Novo valor: ")
+        Update_Estoque(posicao, atributo, novo_valor)
+        print("Estoque alterado com sucesso!")
+    
+    elif op == 3:
+        print("\n--- DELETAR ESTOQUE ---")
+        Printar_Estoque()
+        posicao = int(input("Escolha o estoque: "))
+        Delet_Estoque(posicao)
+        print("Estoque deletado com sucesso!")
+    
+    elif op == 4:
+        print("\n--- LISTAR ESTOQUES ---")
+        Printar_Estoque()

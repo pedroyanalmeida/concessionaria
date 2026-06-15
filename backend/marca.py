@@ -1,119 +1,107 @@
 import conexaoBD
 
-def Marca(op):
-    try:
-        mydb = conexaoBD.conectar()
-        mycursor = mydb.cursor()
-        
-        mycursor.execute("""CREATE TABLE IF NOT EXISTS Marca(
-                        CNPJ VARCHAR(45) NOT NULL PRIMARY KEY,
-                        Nome VARCHAR(100) NOT NULL,
-                        Pais_origem VARCHAR(45) NOT NULL
-                        ) ENGINE = InnoDB""")
-        
-        if op == 1:
+def Listar_Marca():
+    mydb = conexaoBD.conectar()
+    mycursor = mydb.cursor()
+    mycursor.execute("SELECT * FROM Marca")
+    myresult = mycursor.fetchall()
+    mydb.close()
+    return myresult
 
-            print('CADASTRO DE MARCA')
-            
-            cnpj = str(input('Digite o CNPJ da Marca: '))
-            nome = str(input('Digite o Nome da Marca (Ex: Fiat, Toyota): '))
-            pais = str(input('Digite o País de Origem da Marca: '))
+def Printar_Marca():
+    marcas = Listar_Marca()
+    for n in range(len(marcas)):
+        print(f"{n+1}- {marcas[n]}")
 
-            sqlInsert = 'INSERT INTO Marca (CNPJ, Nome, Pais_origem) VALUES (%s, %s, %s)'
-            val = (cnpj, nome, pais)
-            
-            mycursor.execute(sqlInsert, val)
-            print(f"\nmarca '{nome}' cadastrada")
-        
-        elif op == 2:
-        
-            print('\nLISTANDO MARCAS:\n')
-            mycursor.execute('SELECT * FROM Marca')
-            myresult = mycursor.fetchall()
+def Atributos_Marca():
+    mydb = conexaoBD.conectar()
+    mycursor = mydb.cursor()
+    mycursor.execute("SHOW COLUMNS FROM Marca")
+    atributos = mycursor.fetchall()
+    mydb.close()
+    colunas = []
+    for n in range(len(atributos)):
+        colunas.append(atributos[n][0])
+    return colunas
+
+def Printar_Atributos():
+    marcas = Atributos_Marca()
+    for n in range(len(marcas)):
+        print(f"{n+1}- {marcas[n]}")
+
+def Cadastrar_Marca(valores): 
+    mydb = conexaoBD.conectar()
+    mycursor = mydb.cursor()
+    colunas_lista = Atributos_Marca()
+    colunas_string = ",".join(colunas_lista)
     
-            if len(myresult) == 0:
-                
-                print('nenhuma marca cadastrada.')
+    placeholders = ",".join(["%s"] * len(colunas_lista))
+
+    sqlInsert = f"INSERT INTO Marca ({colunas_string}) VALUES ({placeholders})"
+
+    mycursor.execute(sqlInsert, valores)
+    mydb.commit()
+    mydb.close()
+
+def Update_Marca(Marca_posi, atributo_posi, novo_valor):
+    mydb = conexaoBD.conectar()
+    mycursor = mydb.cursor()
+    myresult = Listar_Marca()
             
-            else:
+    if Marca_posi > 0 and Marca_posi <= len(myresult):
+        marca = myresult[Marca_posi-1]
+        cnpj = marca[0]
 
-                for n in range(len(myresult)):
-                    print(f"marca {n+1}: {myresult[n]}")
+        atributos = Atributos_Marca()
 
-                n = int (input('Escolha a marca para alterar: '))
-                if n > 0 and n <= len(myresult):
-                    marca = myresult[n-1]
+        if atributo_posi > 0 and atributo_posi <= len(atributos):
+            coluna = atributos[atributo_posi-1]
+            sqlUpdate = f"UPDATE Marca SET {coluna} = %s WHERE CNPJ = %s"
+            mycursor.execute(sqlUpdate, (novo_valor, cnpj))
+            mydb.commit()
+    mydb.close()
 
-                    cnpj = marca[0]
-                    nome = marca[1]
-                    pais = marca[2]
-                    
-                    print('\nALTERACAO DE MARCA\n')
-                    print(f"(1) CNPJ: {cnpj}\n(2) Nome: {nome}\n(3) pais de Origem: {pais}")
-                    
-                    opcao = int (input('digite a opcao que deseja alterar: '))
-                    
-                    escolha = "Nome"
-                    if opcao == 1:
-
-                        mudar = str(input('novo CNPJ da Marca: '))
-                        escolha = "CNPJ"
-                        
-                    elif opcao == 2:
-
-                        mudar = str(input('novo Nome: '))
-                        escolha = "Nome"
-                    
-                    else:
-                        mudar = str(input('novo Pais de Origem: '))
-                        escolha = "Pais_origem"
-
-                    sqlUpdate = f"UPDATE Marca SET {escolha} = '{mudar}' WHERE CNPJ = '{cnpj}'"
-                        
-                    mycursor.execute(sqlUpdate)
-                    print('\nmarca alterada com sucesso!\n')
-        
-        elif op == 3:
-            print('LISTANDO MARCAS')
-        
-            mycursor.execute("SELECT * FROM Marca")
-            myresult = mycursor.fetchall()
-    
-            if len(myresult) == 0:
-                print('NENHUMA MARCA CADASTRADA')
-        
-            else:
-        
-                for n in range(len(myresult)):
-        
-                    print(f"marca {n+1}: {myresult[n]}")
-
-                n = int(input('escolha uma marca pra apagar: '))
-                
-                if n > 0 and n <= len(myresult):
-                    marca = myresult[n-1]
-                    
-                    cnpj = marca[0]
-                    nome = marca[1]
-                    pais = marca[2]
-                
-                    print("DELETANDO MARCA")
-                    print(f"CNPJ: {cnpj}\nNome: {nome}\nPaís: {pais}")
-                    
-                    confirma = str(input('\napagar modelo (sim/nao): '))
-                    
-                    if confirma in 'sim':
-                    
-                        sqlDelete = f"DELETE FROM Marca WHERE CNPJ = '{cnpj}'"
-                        mycursor.execute(sqlDelete)
-                        print('\nmarca removida\n')
-                    
-                    else:
-                    
-                        print("o processo foi interrompido")
-                        
-        
+def Delet_Marca(Marca_posi):
+    mydb = conexaoBD.conectar()
+    mycursor = mydb.cursor()
+    myresult = Listar_Marca()
+            
+    if Marca_posi > 0 and Marca_posi <= len(myresult):
+        marca = myresult[Marca_posi-1]
+        cnpj = marca[0]
+        sqlDelete = f"DELETE FROM Marca WHERE CNPJ = '{cnpj}'"
+        mycursor.execute(sqlDelete)
         mydb.commit()
+    mydb.close()
 
-    except Exception as e:
-        print(f"erro {e}")
+def Marca(op):
+    if op == 1:
+        print("\n--- CADASTRAR MARCA ---")
+        atributos = Atributos_Marca()
+        valores = []
+        for atributo in atributos:
+            valor = input(f"{atributo}: ")
+            valores.append(valor)
+        Cadastrar_Marca(tuple(valores))
+        print("Marca cadastrada com sucesso!")
+    
+    elif op == 2:
+        print("\n--- ALTERAR MARCA ---")
+        Printar_Marca()
+        posicao = int(input("Escolha a marca: "))
+        Printar_Atributos()
+        atributo = int(input("Escolha o atributo: "))
+        novo_valor = input("Novo valor: ")
+        Update_Marca(posicao, atributo, novo_valor)
+        print("Marca alterada com sucesso!")
+    
+    elif op == 3:
+        print("\n--- DELETAR MARCA ---")
+        Printar_Marca()
+        posicao = int(input("Escolha a marca: "))
+        Delet_Marca(posicao)
+        print("Marca deletada com sucesso!")
+    
+    elif op == 4:
+        print("\n--- LISTAR MARCAS ---")
+        Printar_Marca()

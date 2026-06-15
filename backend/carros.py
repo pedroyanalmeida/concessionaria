@@ -1,106 +1,107 @@
 import conexaoBD
 
-def Carros(op):
-    try:
-        mydb = conexaoBD.conectar()
-        mycursor = mydb.cursor()
-        
-        if op == 1:
-            mycursor.execute(f"SHOW COLUMNS FROM Carros")
-            atributos = mycursor.fetchall()
+def Listar_Carros():
+    mydb = conexaoBD.conectar()
+    mycursor = mydb.cursor()
+    mycursor.execute("SELECT * FROM Carros")
+    myresult = mycursor.fetchall()
+    mydb.close()
+    return myresult
 
-            colunas = ""
-            for n in range(len(atributos)):
-                colunas += atributos[n][0]
-                if n < len(atributos)-1:
-                    colunas += ", "
+def Printar_Carros():
+    carros = Listar_Carros()
+    for n in range(len(carros)):
+        print(f"{n+1}- {carros[n]}")
 
-            placeholders = ", ".join(["%s"] * len(atributos))
+def Atributos_Carros():
+    mydb = conexaoBD.conectar()
+    mycursor = mydb.cursor()
+    mycursor.execute("SHOW COLUMNS FROM Carros")
+    atributos = mycursor.fetchall()
+    mydb.close()
+    colunas = []
+    for n in range(len(atributos)):
+        colunas.append(atributos[n][0])
+    return colunas
 
-            sqlInsert = f"INSERT INTO Carros ({colunas}) VALUES ({placeholders})" 
+def Printar_Atributos():
+    carros = Atributos_Carros()
+    for n in range(len(carros)):
+        print(f"{n+1}- {carros[n]}")
 
-            colunas = colunas.split(",")
-
-            val = tuple()
-            for n in range(len(colunas)):
-                value = str(input(f"{colunas[n]}: "))
-                val += (value,)
-
-            mycursor.execute(sqlInsert, val)
-            print("Carro cadastrado com sucesso!")
-
-        elif op == 2:
-            print("Listando todos os carros:")
-            
-            mycursor.execute("SELECT * FROM Carros")
-            myresult = mycursor.fetchall()
+def Cadastrar_Carros(valores): 
+    mydb = conexaoBD.conectar()
+    mycursor = mydb.cursor()
+    colunas_lista = Atributos_Carros()
+    colunas_string = ",".join(colunas_lista)
     
-            for n in range(len(myresult)):
-                print(f"carro{n+1}: {myresult[n]}")
+    placeholders = ",".join(["%s"] * len(colunas_lista))
 
-            n = int(input("Escolha um carro para fazer alteração: "))
+    sqlInsert = f"INSERT INTO Carros ({colunas_string}) VALUES ({placeholders})"
+
+    mycursor.execute(sqlInsert, valores)
+    mydb.commit()
+    mydb.close()
+
+def Update_Carros(Carros_posi, atributo_posi, novo_valor):
+    mydb = conexaoBD.conectar()
+    mycursor = mydb.cursor()
+    myresult = Listar_Carros()
             
-            if n > 0 and n <= len(myresult):
-                carro = myresult[n-1]
-                chassi = carro[0]
+    if Carros_posi > 0 and Carros_posi <= len(myresult):
+        carro = myresult[Carros_posi-1]
+        chassi = carro[0]
 
-                print("=" * 40)
-                print("      ALTERAÇÃO DE CARRO")
-                print("=" * 40)
+        atributos = Atributos_Carros()
 
-                for at in carro:
-                    print(at,"\n")
-                
-                mycursor.execute(f"SHOW COLUMNS FROM Carros")
-                atributos = mycursor.fetchall()
+        if atributo_posi > 0 and atributo_posi <= len(atributos):
+            coluna = atributos[atributo_posi-1]
+            sqlUpdate = f"UPDATE Carros SET {coluna} = %s WHERE Chassi = %s"
+            mycursor.execute(sqlUpdate, (novo_valor, chassi))
+            mydb.commit()
+    mydb.close()
 
-                for n in range(1, len(atributos)):
-                    print(f"{n}-"+atributos[n][0])
-                
-                atri = int(input("Qual atributo deseja alterar: "))
-
-                if atri > 0 and atri < len(atributos):
-                    coluna = atributos[atri][0]
-
-                    mudar = str(input(f"{coluna}: "))
-
-                    sqlUpdate = f"UPDATE Carros SET {coluna} = '{mudar}' WHERE Chassi = '{chassi}'"
-                    mycursor.execute(sqlUpdate)
-                    print("Carro atualizado com sucesso!")
-
-        elif op == 3:
-            print("Listando todos os carros:")
+def Delet_Carros(Carros_posi):
+    mydb = conexaoBD.conectar()
+    mycursor = mydb.cursor()
+    myresult = Listar_Carros()
             
-            mycursor.execute("SELECT * FROM Carros")
-            myresult = mycursor.fetchall()
-    
-            for n in range(len(myresult)):
-                print(f"carro{n+1}: {myresult[n]}")
-
-            n = int(input("Escolha um carro para ser apagado no sistema: "))
-            
-            if n > 0 and n <= len(myresult):
-                carro = myresult[n-1]
-                chassi = carro[0]
-                cor = carro[1]
-                preco = carro[2]
-                venda_num = carro[3]
-                estoque_num = carro[4]
-                modelo_id = carro[5]
-
-                print("=" * 40)
-                print("      DELETANDO CARRO")
-                print("=" * 40)
-
-                print(f"1 - Chassi: {chassi}\n2 - Cor: {cor}\n3 - Preço: {preco}\n4 - N° Venda: {venda_num}\n5 - N° Estoque: {estoque_num}\n6 - ID Modelo: {modelo_id}")
-                
-                confirma = str(input("Confirma[S/N]: "))
-                if confirma in 'Ss':
-                    sqlDelete = f"DELETE FROM Carros WHERE Chassi = '{chassi}'"
-                    mycursor.execute(sqlDelete)
-                    print("Carro deletado com sucesso!")
-        
+    if Carros_posi > 0 and Carros_posi <= len(myresult):
+        carro = myresult[Carros_posi-1]
+        chassi = carro[0]
+        sqlDelete = f"DELETE FROM Carros WHERE Chassi = '{chassi}'"
+        mycursor.execute(sqlDelete)
         mydb.commit()
-        
-    except Exception as e:
-        print(f"Erro no carro: {e}")
+    mydb.close()
+
+def Carros(op):
+    if op == 1:
+        print("\n--- CADASTRAR CARRO ---")
+        atributos = Atributos_Carros()
+        valores = []
+        for atributo in atributos:
+            valor = input(f"{atributo}: ")
+            valores.append(valor)
+        Cadastrar_Carros(tuple(valores))
+        print("Carro cadastrado com sucesso!")
+    
+    elif op == 2:
+        print("\n--- ALTERAR CARRO ---")
+        Printar_Carros()
+        posicao = int(input("Escolha o carro: "))
+        Printar_Atributos()
+        atributo = int(input("Escolha o atributo: "))
+        novo_valor = input("Novo valor: ")
+        Update_Carros(posicao, atributo, novo_valor)
+        print("Carro alterado com sucesso!")
+    
+    elif op == 3:
+        print("\n--- DELETAR CARRO ---")
+        Printar_Carros()
+        posicao = int(input("Escolha o carro: "))
+        Delet_Carros(posicao)
+        print("Carro deletado com sucesso!")
+    
+    elif op == 4:
+        print("\n--- LISTAR CARROS ---")
+        Printar_Carros()

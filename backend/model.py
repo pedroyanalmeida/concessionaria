@@ -1,134 +1,107 @@
 import conexaoBD
 
-def Modelo(op):
-    try:
-        mydb = conexaoBD.conectar()
-        mycursor = mydb.cursor()
-        
-        mycursor.execute("""CREATE TABLE IF NOT EXISTS Modelo(
-                        idModelo INT NOT NULL PRIMARY KEY,
-                        Nome VARCHAR(100) NOT NULL,
-                        Ano_Modelo INT NOT NULL,
-                        Marca_CNPJ VARCHAR(45) NOT NULL,
-                        FOREIGN KEY (Marca_CNPJ) REFERENCES Marca(CNPJ)
-                        ON DELETE NO ACTION
-                        ON UPDATE NO ACTION
-                        ) ENGINE = InnoDB""")
-        
-        if op == 1:
-            print('CADASTRO DE MODELO')
-            
-            id_modelo = int (input('digite o ID do Modelo: '))
-            nome = str (input('digite o nome do modelo:'))
-            ano = int (input('digite o Ano do Modelo: '))
-            marca_cnpj = str (input('digite o CNPJ da marca: '))
+def Listar_Modelo():
+    mydb = conexaoBD.conectar()
+    mycursor = mydb.cursor()
+    mycursor.execute("SELECT * FROM Modelo")
+    myresult = mycursor.fetchall()
+    mydb.close()
+    return myresult
 
-            sqlInsert = 'INSERT INTO Modelo (idModelo, Nome, Ano_Modelo, Marca_CNPJ) VALUES (%s, %s, %s, %s)'
-            
-            val = (id_modelo, nome, ano, marca_cnpj)
-            
-            mycursor.execute(sqlInsert, val)
-            print(f"\nmodelo '{nome}' cadastrado")
-        
-        elif op == 2:
-            
-            print('\nLISTANDO MODELOS:\n')
+def Printar_Modelo():
+    modelos = Listar_Modelo()
+    for n in range(len(modelos)):
+        print(f"{n+1}- {modelos[n]}")
 
-            mycursor.execute('SELECT * FROM Modelo')
-            myresult = mycursor.fetchall()
+def Atributos_Modelo():
+    mydb = conexaoBD.conectar()
+    mycursor = mydb.cursor()
+    mycursor.execute("SHOW COLUMNS FROM Modelo")
+    atributos = mycursor.fetchall()
+    mydb.close()
+    colunas = []
+    for n in range(len(atributos)):
+        colunas.append(atributos[n][0])
+    return colunas
+
+def Printar_Atributos():
+    modelos = Atributos_Modelo()
+    for n in range(len(modelos)):
+        print(f"{n+1}- {modelos[n]}")
+
+def Cadastrar_Modelo(valores): 
+    mydb = conexaoBD.conectar()
+    mycursor = mydb.cursor()
+    colunas_lista = Atributos_Modelo()
+    colunas_string = ",".join(colunas_lista)
     
-            if len(myresult) == 0:
-            
-                print('nenhum modelo cadastrado.')
-            
-            else:
-            
-                for n in range(len(myresult)):
-            
-                    print(f"modelo {n+1}: {myresult[n]}")
+    placeholders = ",".join(["%s"] * len(colunas_lista))
 
-                n = int(input('escolha o modelo pra alterar: '))
-                
-                if n > 0 and n <= len(myresult):
-                
-                    modelo = myresult[n-1]
-                    
-                    id_modelo = modelo[0]
-                    nome = modelo[1]
-                    ano = modelo[2]
-                    marca_cnpj = modelo[3]
-                    
-                    print('\nALTERACAO DE MODELO\n')
+    sqlInsert = f"INSERT INTO Modelo ({colunas_string}) VALUES ({placeholders})"
 
-                    print(f"(1) ID do modelo: {id_modelo}\n(2) nome: {nome}\n(3) ano Modelo: {ano}\n(4) CNPJ da marca: {marca_cnpj}")
-                    
-                    opcao = int (input('digite a opcao pra alterar: '))
-                    
-                    escolha = "Nome"
-                    if opcao == 1:
-                        mudar = int(input('novo ID do Modelo: '))
-                        escolha = "idModelo"
+    mycursor.execute(sqlInsert, valores)
+    mydb.commit()
+    mydb.close()
 
-                    elif opcao == 2:
-                        mudar = str(input('novo Nome: '))
-                        escolha = "Nome"
-
-                    elif opcao == 3:
-                        mudar = int(input('novo Ano: '))
-                        escolha = "Ano_Modelo"
-                    else:
-                        mudar = str(input('novo CNPJ da Marca: '))
-                        escolha = "Marca_CNPJ"
-
-    # aqui faz a
-                    if escolha == "idModelo" or escolha == "Ano_Modelo":
-                        sqlUpdate = f"UPDATE Modelo SET {escolha} = {mudar} WHERE idModelo = {id_modelo}"
-                    else:
-                        sqlUpdate = f"UPDATE Modelo SET {escolha} = '{mudar}' WHERE idModelo = {id_modelo}"
-                        
-                    mycursor.execute(sqlUpdate)
-                    print('\nmodelo alterado\n')
-                
-        elif op == 3:
+def Update_Modelo(Modelo_posi, atributo_posi, novo_valor):
+    mydb = conexaoBD.conectar()
+    mycursor = mydb.cursor()
+    myresult = Listar_Modelo()
             
-            print('LISTANDO MODELOS')
-            
-            mycursor.execute("SELECT * FROM Modelo")
-            myresult = mycursor.fetchall()
-    
-            if len(myresult) == 0:
-                print('NENHUM MODELO CADASTRADO')
-            
-            else:
-            
-                for n in range(len(myresult)):
-            
-                    print(f"Modelo {n+1}: {myresult[n]}")
+    if Modelo_posi > 0 and Modelo_posi <= len(myresult):
+        modelo = myresult[Modelo_posi-1]
+        id_modelo = modelo[0]
 
-                n = int(input('Escolha um modelo para apagar: '))
-                
-                if n > 0 and n <= len(myresult):
-                    modelo = myresult[n-1]
+        atributos = Atributos_Modelo()
 
-                    id_modelo = modelo[0]
-                    nome = modelo[1]
-                    ano = modelo[2]
-                    marca_cnpj = modelo[3]
-                
-                    print("DELETANDO MODELO")
+        if atributo_posi > 0 and atributo_posi <= len(atributos):
+            coluna = atributos[atributo_posi-1]
+            sqlUpdate = f"UPDATE Modelo SET {coluna} = %s WHERE idModelo = %s"
+            mycursor.execute(sqlUpdate, (novo_valor, id_modelo))
+            mydb.commit()
+    mydb.close()
+
+def Delet_Modelo(Modelo_posi):
+    mydb = conexaoBD.conectar()
+    mycursor = mydb.cursor()
+    myresult = Listar_Modelo()
             
-                    print(f"ID: {id_modelo}\n(1) nome: {nome}\n(2) ano: {ano}\n(3) marca: {marca_cnpj}")
-                    
-                    confirma = str (input('\napagar modelo (sim/nao): '))
-
-                    if confirma in 'sim':
-                        sqlDelete = f"DELETE FROM Modelo WHERE idModelo = {id_modelo}"
-                        mycursor.execute(sqlDelete)
-                        print('\nModelo removido\n')
-                    else:
-                        print("processo interrompido")
-                        
+    if Modelo_posi > 0 and Modelo_posi <= len(myresult):
+        modelo = myresult[Modelo_posi-1]
+        id_modelo = modelo[0]
+        sqlDelete = f"DELETE FROM Modelo WHERE idModelo = {id_modelo}"
+        mycursor.execute(sqlDelete)
         mydb.commit()
+    mydb.close()
 
-    except Exception as e:
-        print(f"Erro {e}")
+def Modelo(op):
+    if op == 1:
+        print("\n--- CADASTRAR MODELO ---")
+        atributos = Atributos_Modelo()
+        valores = []
+        for atributo in atributos:
+            valor = input(f"{atributo}: ")
+            valores.append(valor)
+        Cadastrar_Modelo(tuple(valores))
+        print("Modelo cadastrado com sucesso!")
+    
+    elif op == 2:
+        print("\n--- ALTERAR MODELO ---")
+        Printar_Modelo()
+        posicao = int(input("Escolha o modelo: "))
+        Printar_Atributos()
+        atributo = int(input("Escolha o atributo: "))
+        novo_valor = input("Novo valor: ")
+        Update_Modelo(posicao, atributo, novo_valor)
+        print("Modelo alterado com sucesso!")
+    
+    elif op == 3:
+        print("\n--- DELETAR MODELO ---")
+        Printar_Modelo()
+        posicao = int(input("Escolha o modelo: "))
+        Delet_Modelo(posicao)
+        print("Modelo deletado com sucesso!")
+    
+    elif op == 4:
+        print("\n--- LISTAR MODELOS ---")
+        Printar_Modelo()
