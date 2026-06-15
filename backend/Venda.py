@@ -60,7 +60,7 @@ def Update_Venda(Venda_posi, atributo_posi, novo_valor):
 
 def Delet_Venda(Venda_posi):
     myresult = Listar_Venda()
-            
+               
     if Venda_posi > 0 and Venda_posi <= len(myresult):
         venda = myresult[Venda_posi-1]
         numVenda = venda[0]
@@ -69,3 +69,4 @@ def Delet_Venda(Venda_posi):
 
 Printar_Atributos()
 print("===========================")
+Cadastrar_Venda(('1','10/06/2026', '5000', '11111', '18%', '1'))
