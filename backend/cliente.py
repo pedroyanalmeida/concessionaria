@@ -69,7 +69,7 @@ def Delet_Cliente(Cliente_posi):
     if Cliente_posi > 0 and Cliente_posi <= len(myresult):
         cliente = myresult[Cliente_posi-1]
         cpf = cliente[0]
-        sqlDelete = f"DELETE FROM Cliente WHERE CPF = '{cpf}'"
+        sqlDelete = f"DELET FROM Cliente WHERE CPF = '{cpf}'"
         mycursor.execute(sqlDelete)
         mydb.commit()
 
