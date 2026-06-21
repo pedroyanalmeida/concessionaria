@@ -6,7 +6,7 @@ def criar():
         mydb = mysql.connector.connect(
         host="localhost",
         user="root",
-        password="",
+        password="$X1l1p2fe",
         )
 
         mycurso = mydb.cursor()

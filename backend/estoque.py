@@ -6,6 +6,7 @@ def Listar_Estoque():
     mycursor.execute("SELECT * FROM Estoque")
     myresult = mycursor.fetchall()
     mydb.close()
+    
     return myresult
 
 def Printar_Estoque():
@@ -19,6 +20,7 @@ def Atributos_Estoque():
     mycursor.execute("SHOW COLUMNS FROM Estoque")
     atributos = mycursor.fetchall()
     mydb.close()
+
     colunas = []
     for n in range(len(atributos)):
         colunas.append(atributos[n][0])
@@ -30,49 +32,51 @@ def Printar_Atributos():
         print(f"{n+1}- {estoques[n]}")
 
 def Cadastrar_Estoque(valores): 
-    mydb = conexaoBD.conectar()
-    mycursor = mydb.cursor()
-    colunas_lista = Atributos_Estoque()
-    colunas_string = ",".join(colunas_lista)
-    
-    placeholders = ",".join(["%s"] * len(colunas_lista))
+    try:
+        mydb = conexaoBD.conectar()
+        mycursor = mydb.cursor()
+        colunas_lista = Atributos_Estoque()
+        colunas_string = ",".join(colunas_lista)
+        
+        placeholders = ",".join(["%s"] * len(colunas_lista))
 
-    sqlInsert = f"INSERT INTO Estoque ({colunas_string}) VALUES ({placeholders})"
+        sqlInsert = f"INSERT INTO Estoque ({colunas_string}) VALUES ({placeholders})"
 
-    mycursor.execute(sqlInsert, valores)
-    mydb.commit()
-    mydb.close()
+        mycursor.execute(sqlInsert, valores)
+        mydb.close()
+ 
+        return True
+    except:
+        return False
 
-def Update_Estoque(Estoque_posi, atributo_posi, novo_valor):
-    mydb = conexaoBD.conectar()
-    mycursor = mydb.cursor()
-    myresult = Listar_Estoque()
-            
-    if Estoque_posi > 0 and Estoque_posi <= len(myresult):
-        estoque = myresult[Estoque_posi-1]
-        num_estoque = estoque[0]
+def Update_Estoque(estoqueID, coluna, novo_valor):
+    try:
+        mydb = conexaoBD.conectar()
+        mycursor = mydb.cursor()
+                
+        num_estoque = estoqueID
 
-        atributos = Atributos_Estoque()
+        sqlUpdate = f"UPDATE Estoque SET {coluna} = %s WHERE Num_estoque = %s"
+        mycursor.execute(sqlUpdate, (novo_valor, num_estoque))       
+        mydb.close()
+        
+        return True
+    except:
+        return False
 
-        if atributo_posi > 0 and atributo_posi <= len(atributos):
-            coluna = atributos[atributo_posi-1]
-            sqlUpdate = f"UPDATE Estoque SET {coluna} = %s WHERE Num_estoque = %s"
-            mycursor.execute(sqlUpdate, (novo_valor, num_estoque))
-            mydb.commit()
-    mydb.close()
+def Delet_Estoque(estoqueID):
+    try:
+        mydb = conexaoBD.conectar()
+        mycursor = mydb.cursor()
 
-def Delet_Estoque(Estoque_posi):
-    mydb = conexaoBD.conectar()
-    mycursor = mydb.cursor()
-    myresult = Listar_Estoque()
-            
-    if Estoque_posi > 0 and Estoque_posi <= len(myresult):
-        estoque = myresult[Estoque_posi-1]
-        num_estoque = estoque[0]
+        num_estoque = estoqueID
         sqlDelete = f"DELETE FROM Estoque WHERE Num_estoque = '{num_estoque}'"
-        mycursor.execute(sqlDelete)
-        mydb.commit()
-    mydb.close()
+        mycursor.execute(sqlDelete) 
+        mydb.close()
+        
+        return True
+    except:
+        return False
 
 def Estoque(op):
     if op == 1:

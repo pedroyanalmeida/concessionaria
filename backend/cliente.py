@@ -30,48 +30,44 @@ def Printar_Atributos():
         print(f"{n+1}- {clientes[n]}")
 
 def Cadastrar_Cliente(valores): 
+    try:
+        mydb = conexaoBD.conectar()
+        mycursor = mydb.cursor()
+        colunas_lista = Atributos_Cliente()
+        colunas_string = ",".join(colunas_lista)
+        
+        placeholders = ",".join(["%s"] * len(colunas_lista))
+
+        sqlInsert = f"INSERT INTO Cliente ({colunas_string}) VALUES ({placeholders})"
+
+        mycursor.execute(sqlInsert, valores)
+        mydb.close()
+        
+        return True
+    except:
+        return False
+
+def Update_Cliente(clienteCPF, coluna, novo_valor):
+    try:
+        mydb = conexaoBD.conectar()
+        mycursor = mydb.cursor()
+        cpf = clienteCPF
+        keyCliente = Atributos_Cliente()[0]
+
+        sqlUpdate = f"UPDATE Cliente SET {coluna} = %s WHERE {keyCliente} = %s"
+        mycursor.execute(sqlUpdate, (novo_valor, cpf))
+        mydb.close()
+        return True
+    except:
+        return False
+
+def Delet_Cliente(clienteCPF):
     mydb = conexaoBD.conectar()
     mycursor = mydb.cursor()
-    colunas_lista = Atributos_Cliente()
-    colunas_string = ",".join(colunas_lista)
-    
-    placeholders = ",".join(["%s"] * len(colunas_lista))
 
-    sqlInsert = f"INSERT INTO Cliente ({colunas_string}) VALUES ({placeholders})"
-
-    mycursor.execute(sqlInsert, valores)
-    mydb.commit()
+    sqlDelete = f"DELETE FROM Cliente WHERE CPF = '{clienteCPF}'"
+    mycursor.execute(sqlDelete)
     mydb.close()
-
-def Update_Cliente(Cliente_posi, atributo_posi, novo_valor):
-    mydb = conexaoBD.conectar()
-    mycursor = mydb.cursor()
-    myresult = Listar_Cliente()
-            
-    if Cliente_posi > 0 and Cliente_posi <= len(myresult):
-        cliente = myresult[Cliente_posi-1]
-        cpf = cliente[0]
-
-        atributos = Atributos_Cliente()
-
-        if atributo_posi > 0 and atributo_posi <= len(atributos):
-            coluna = atributos[atributo_posi-1]
-            sqlUpdate = f"UPDATE Cliente SET {coluna} = %s WHERE CPF = %s"
-            mycursor.execute(sqlUpdate, (novo_valor, cpf))
-            mydb.commit()
-    mydb.close()
-
-def Delet_Cliente(Cliente_posi):
-    mydb = conexaoBD.conectar()
-    mycursor = mydb.cursor()
-    myresult = Listar_Cliente()
-            
-    if Cliente_posi > 0 and Cliente_posi <= len(myresult):
-        cliente = myresult[Cliente_posi-1]
-        cpf = cliente[0]
-        sqlDelete = f"DELET FROM Cliente WHERE CPF = '{cpf}'"
-        mycursor.execute(sqlDelete)
-        mydb.commit()
 
         
 def Cliente(op):

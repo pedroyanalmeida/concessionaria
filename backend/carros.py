@@ -30,49 +30,48 @@ def Printar_Atributos():
         print(f"{n+1}- {carros[n]}")
 
 def Cadastrar_Carros(valores): 
-    mydb = conexaoBD.conectar()
-    mycursor = mydb.cursor()
-    colunas_lista = Atributos_Carros()
-    colunas_string = ",".join(colunas_lista)
+    try:
+        mydb = conexaoBD.conectar()
+        mycursor = mydb.cursor()
+        colunas_lista = Atributos_Carros()
+        colunas_string = ",".join(colunas_lista)
+        
+        placeholders = ",".join(["%s"] * len(colunas_lista))
+
+        sqlInsert = f"INSERT INTO Carros ({colunas_string}) VALUES ({placeholders})"
+
+        mycursor.execute(sqlInsert, valores)
+        mydb.commit()
+        mydb.close()
+        return True
+    except:
+        return False
+
+def Update_Carros(carrosKEy, coluna, novo_valor):
+    try:
+        mydb = conexaoBD.conectar()
+        mycursor = mydb.cursor()
+
+        chassi = carrosKEy
+        sqlUpdate = f"UPDATE Carros SET {coluna} = %s WHERE Chassi = %s"
+        mycursor.execute(sqlUpdate, (novo_valor, chassi))
+        mydb.commit()
+        mydb.close()
+        return True
+    except:
+        return False
+
+def Delet_Carros(chassi):
+    try:
+        mydb = conexaoBD.conectar()
+        mycursor = mydb.cursor()
     
-    placeholders = ",".join(["%s"] * len(colunas_lista))
-
-    sqlInsert = f"INSERT INTO Carros ({colunas_string}) VALUES ({placeholders})"
-
-    mycursor.execute(sqlInsert, valores)
-    mydb.commit()
-    mydb.close()
-
-def Update_Carros(Carros_posi, atributo_posi, novo_valor):
-    mydb = conexaoBD.conectar()
-    mycursor = mydb.cursor()
-    myresult = Listar_Carros()
-            
-    if Carros_posi > 0 and Carros_posi <= len(myresult):
-        carro = myresult[Carros_posi-1]
-        chassi = carro[0]
-
-        atributos = Atributos_Carros()
-
-        if atributo_posi > 0 and atributo_posi <= len(atributos):
-            coluna = atributos[atributo_posi-1]
-            sqlUpdate = f"UPDATE Carros SET {coluna} = %s WHERE Chassi = %s"
-            mycursor.execute(sqlUpdate, (novo_valor, chassi))
-            mydb.commit()
-    mydb.close()
-
-def Delet_Carros(Carros_posi):
-    mydb = conexaoBD.conectar()
-    mycursor = mydb.cursor()
-    myresult = Listar_Carros()
-            
-    if Carros_posi > 0 and Carros_posi <= len(myresult):
-        carro = myresult[Carros_posi-1]
-        chassi = carro[0]
         sqlDelete = f"DELETE FROM Carros WHERE Chassi = '{chassi}'"
         mycursor.execute(sqlDelete)
-        mydb.commit()
-    mydb.close()
+        mydb.close()
+        return True
+    except:
+        return False
 
 def Carros(op):
     if op == 1:

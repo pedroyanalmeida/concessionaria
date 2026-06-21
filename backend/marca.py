@@ -30,49 +30,49 @@ def Printar_Atributos():
         print(f"{n+1}- {marcas[n]}")
 
 def Cadastrar_Marca(valores): 
-    mydb = conexaoBD.conectar()
-    mycursor = mydb.cursor()
-    colunas_lista = Atributos_Marca()
-    colunas_string = ",".join(colunas_lista)
-    
-    placeholders = ",".join(["%s"] * len(colunas_lista))
+    try:
+        mydb = conexaoBD.conectar()
+        mycursor = mydb.cursor()
+        colunas_lista = Atributos_Marca()
+        colunas_string = ",".join(colunas_lista)
+        
+        placeholders = ",".join(["%s"] * len(colunas_lista))
 
-    sqlInsert = f"INSERT INTO Marca ({colunas_string}) VALUES ({placeholders})"
+        sqlInsert = f"INSERT INTO Marca ({colunas_string}) VALUES ({placeholders})"
 
-    mycursor.execute(sqlInsert, valores)
-    mydb.commit()
-    mydb.close()
+        mycursor.execute(sqlInsert, valores)
+        mydb.close()
+        
+        return True
+    except:
+        return False
 
-def Update_Marca(Marca_posi, atributo_posi, novo_valor):
-    mydb = conexaoBD.conectar()
-    mycursor = mydb.cursor()
-    myresult = Listar_Marca()
-            
-    if Marca_posi > 0 and Marca_posi <= len(myresult):
-        marca = myresult[Marca_posi-1]
-        cnpj = marca[0]
+def Update_Marca(marcaID, coluna, novo_valor):
+    try:
+        mydb = conexaoBD.conectar()
+        mycursor = mydb.cursor()
+        cnpj = marcaID
+        sqlUpdate = f"UPDATE Marca SET {coluna} = %s WHERE CNPJ = %s"
+        mycursor.execute(sqlUpdate, (novo_valor, cnpj))
+        mydb.close()
+        
+        return True
+    except:
+        return False
 
-        atributos = Atributos_Marca()
+def Delet_Marca(marcaID):
+    try:
+        mydb = conexaoBD.conectar()
+        mycursor = mydb.cursor()
 
-        if atributo_posi > 0 and atributo_posi <= len(atributos):
-            coluna = atributos[atributo_posi-1]
-            sqlUpdate = f"UPDATE Marca SET {coluna} = %s WHERE CNPJ = %s"
-            mycursor.execute(sqlUpdate, (novo_valor, cnpj))
-            mydb.commit()
-    mydb.close()
-
-def Delet_Marca(Marca_posi):
-    mydb = conexaoBD.conectar()
-    mycursor = mydb.cursor()
-    myresult = Listar_Marca()
-            
-    if Marca_posi > 0 and Marca_posi <= len(myresult):
-        marca = myresult[Marca_posi-1]
-        cnpj = marca[0]
+        cnpj = marcaID
         sqlDelete = f"DELETE FROM Marca WHERE CNPJ = '{cnpj}'"
         mycursor.execute(sqlDelete)
-        mydb.commit()
-    mydb.close()
+        mydb.close()
+        
+        return True
+    except:
+        return False
 
 def Marca(op):
     if op == 1:

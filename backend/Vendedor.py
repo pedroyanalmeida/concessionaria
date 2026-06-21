@@ -1,11 +1,11 @@
 import conexaoBD
-mydb = conexaoBD.conectar()
-mycursor = mydb.cursor()
 
 def Listar_Vendedor():
+    mydb = conexaoBD.conectar()
+    mycursor = mydb.cursor()
     mycursor.execute("SELECT * FROM Vendedor")
     myresult = mycursor.fetchall()
-    
+    mydb.close()
     return myresult
 
 def Printar_Vendedores():
@@ -14,8 +14,11 @@ def Printar_Vendedores():
         print(f"{n+1}- {vendedores[n]}")
 
 def Atributos_Vendedor():
+    mydb = conexaoBD.conectar()
+    mycursor = mydb.cursor()
     mycursor.execute("SHOW COLUMNS FROM Vendedor")
     atributos = mycursor.fetchall()
+    mydb.close()
 
     colunas = []
     for n in range(len(atributos)):
@@ -28,37 +31,48 @@ def Printar_Atributos():
     for n in range(len(vendedores)):
         print(f"{n+1}- {vendedores[n]}")
 
-def Cadastrar_Vendedor(valores): 
-    colunas_lista = Atributos_Vendedor()
-    colunas_string = ",".join(colunas_lista)
-    
-    placeholders = ",".join(["%s"] * len(colunas_lista))
+def Cadastrar_Vendedor(valores):
+    try:
+        mydb = conexaoBD.conectar()
+        mycursor = mydb.cursor()
+        colunas_lista = Atributos_Vendedor()
+        colunas_string = ",".join(colunas_lista)
+        
+        placeholders = ",".join(["%s"] * len(colunas_lista))
 
-    sqlInsert = f"INSERT INTO Vendedor ({colunas_string}) VALUES ({placeholders})"
+        sqlInsert = f"INSERT INTO Vendedor ({colunas_string}) VALUES ({placeholders})"
 
-    mycursor.execute(sqlInsert, valores)
+        mycursor.execute(sqlInsert, valores)
+        mydb.close()
+        
+        return True
+    except:
+        return False
 
-def Update_Vendedor(Vendedor_posi, atributo_posi, novo_valor):
-    myresult = Listar_Vendedor()
-            
-    if Vendedor_posi > 0 and Vendedor_posi <= len(myresult):
-        vendedor = myresult[Vendedor_posi-1]
-        cpf = vendedor[0]
-        atributos = Atributos_Vendedor()
+def Update_Vendedor(vendedorCPF, coluna, novo_valor):
+    try:
+        mydb = conexaoBD.conectar()
+        mycursor = mydb.cursor()
+        cpf = vendedorCPF
+        sqlUpdate = f"UPDATE Vendedor SET {coluna} = %s WHERE CPF = %s"
+        mycursor.execute(sqlUpdate, (novo_valor, cpf))
+        mydb.close()
 
-        if atributo_posi > 0 and atributo_posi <= len(atributos):
-            coluna = atributos[atributo_posi-1]
-            sqlUpdate = f"UPDATE Vendedor SET {coluna} = %s WHERE CPF = %s"
-            mycursor.execute(sqlUpdate, (novo_valor, cpf))
+        return True
+    except:
+        return False
 
-def Delet_Vendedor(Vendedor_posi):
-    myresult = Listar_Vendedor()
-            
-    if Vendedor_posi > 0 and Vendedor_posi <= len(myresult):
-        vendedor = myresult[Vendedor_posi-1]
-        cpf = vendedor[0]
+def Delet_Vendedor(vendedorCPF):
+    try:
+        mydb = conexaoBD.conectar()
+        mycursor = mydb.cursor()
+        cpf = vendedorCPF
         sqlDelete = f"DELETE FROM Vendedor WHERE CPF = '{cpf}'"
         mycursor.execute(sqlDelete)
+        mydb.close()
+        return True
+    except:
+        return False
     
 def Vendedor(op):
     if op == 1:
