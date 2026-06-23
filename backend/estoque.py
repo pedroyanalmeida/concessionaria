@@ -1,19 +1,19 @@
 import conexaoBD
 
 
-def Listar_Marca():
+def Listar_Estoque():
     mydb = conexaoBD.conectar()
     mycursor = mydb.cursor()
-    mycursor.execute("SELECT * FROM Marca")
+    mycursor.execute("SELECT * FROM Estoque")
     myresult = mycursor.fetchall()
     mydb.close()
     return myresult
 
 
-def Atributos_Marca():
+def Atributos_Estoque():
     mydb = conexaoBD.conectar()
     mycursor = mydb.cursor()
-    mycursor.execute("SHOW COLUMNS FROM Marca")
+    mycursor.execute("SHOW COLUMNS FROM Estoque")
     atributos = mycursor.fetchall()
     mydb.close()
 
@@ -23,15 +23,15 @@ def Atributos_Marca():
     return colunas
 
 
-def Cadastrar_Marca(valores):
+def Cadastrar_Estoque(valores):
     try:
         mydb = conexaoBD.conectar()
         mycursor = mydb.cursor()
-        colunas_lista = Atributos_Marca()
+        colunas_lista = Atributos_Estoque()
         colunas_string = ",".join(colunas_lista)
         placeholders = ",".join(["%s"] * len(colunas_lista))
 
-        sqlInsert = f"INSERT INTO Marca ({colunas_string}) VALUES ({placeholders})"
+        sqlInsert = f"INSERT INTO Estoque ({colunas_string}) VALUES ({placeholders})"
         mycursor.execute(sqlInsert, tuple(valores))
         mydb.close()
         return True
@@ -39,24 +39,24 @@ def Cadastrar_Marca(valores):
         return False
 
 
-def Update_Marca(cnpj, coluna, novo_valor):
+def Update_Estoque(num_estoque, coluna, novo_valor):
     try:
         mydb = conexaoBD.conectar()
         mycursor = mydb.cursor()
-        sqlUpdate = f"UPDATE Marca SET {coluna} = %s WHERE CNPJ = %s"
-        mycursor.execute(sqlUpdate, (novo_valor, cnpj))
+        sqlUpdate = f"UPDATE Estoque SET {coluna} = %s WHERE Num_estoque = %s"
+        mycursor.execute(sqlUpdate, (novo_valor, num_estoque))
         mydb.close()
         return True
     except:
         return False
 
 
-def Delet_Marca(cnpj):
+def Delet_Estoque(num_estoque):
     try:
         mydb = conexaoBD.conectar()
         mycursor = mydb.cursor()
-        sqlDelete = "DELETE FROM Marca WHERE CNPJ = %s"
-        mycursor.execute(sqlDelete, (cnpj,))
+        sqlDelete = "DELETE FROM Estoque WHERE Num_estoque = %s"
+        mycursor.execute(sqlDelete, (num_estoque,))
         mydb.close()
         return True
     except:
