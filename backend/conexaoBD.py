@@ -7,7 +7,7 @@ def conectar():
         mydb = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="",
+            password="$Xilipefe123",
             database="agenciacarros"
         )
         mydb.autocommit = True

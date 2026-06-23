@@ -19,41 +19,11 @@ def cadastrar():
                         Login VARCHAR(100) NOT NULL
                         ) ENGINE = InnoDB""")
         
-        mycursor.execute("""CREATE TABLE IF NOT EXISTS Venda(
-                        NumVenda VARCHAR(45) NOT NULL PRIMARY KEY,
-                        DataVenda VARCHAR(45) NOT NULL,
-                        Valor VARCHAR(45) NOT NULL,
-                        ClienteCPF VARCHAR(45) NOT NULL,
-                        NumParcelas VARCHAR(45) NOT NULL,
-                        VendedorCPF VARCHAR(45) NOT NULL,
-
-                        INDEX fk_VENDA_Cliente_idx (ClienteCPF ASC),
-                        INDEX fk_VENDA_Vendedor1_idx (VendedorCPF ASC),
-
-                        CONSTRAINT fk_VENDA_Cliente
-                            FOREIGN KEY (ClienteCPF)
-                            REFERENCES Cliente (CPF)
-                            ON DELETE CASCADE
-                            ON UPDATE NO ACTION,
-
-                        CONSTRAINT fk_VENDA_Vendedor1
-                            FOREIGN KEY (VendedorCPF)
-                            REFERENCES Vendedor (CPF)
-                            ON DELETE CASCADE
-                            ON UPDATE NO ACTION
-                    ) ENGINE=InnoDB
-                    """)
         
         mycursor.execute("""CREATE TABLE IF NOT EXISTS Marca(
                         CNPJ VARCHAR(45) NOT NULL PRIMARY KEY,
                         Nome VARCHAR(100) NOT NULL
                         ) ENGINE=InnoDB""")
-        
-        mycursor.execute("""CREATE TABLE IF NOT EXISTS Estoque(
-                        NumEstoque VARCHAR(45) NOT NULL PRIMARY KEY,
-                        QuantidadeCarros VARCHAR(45) NOT NULL,
-                        Localizacao VARCHAR(100) NOT NULL
-                        ) ENGINE = InnoDB""")
         
         mycursor.execute("""CREATE TABLE IF NOT EXISTS Modelo(
                         IDModelo VARCHAR(45) NOT NULL PRIMARY KEY,
@@ -73,25 +43,9 @@ def cadastrar():
                         Chassi VARCHAR(45) NOT NULL PRIMARY KEY,
                         Cor VARCHAR(45) NOT NULL,
                         Preco VARCHAR(45) NOT NULL,
-                        NumVenda VARCHAR(45) NOT NULL,
-                        NumEstoque VARCHAR(45) NOT NULL,
                         IDModelo VARCHAR(45) NOT NULL,
                         
-                        INDEX fk_Carros_Venda1_idx (NumVenda ASC),
-                        INDEX fk_Carros_Estoque1_idx (NumEstoque ASC),
                         INDEX fk_Carros_Modelo1_idx (IDModelo ASC),
-                        
-                        CONSTRAINT fk_Carros_Venda1
-                            FOREIGN KEY (NumVenda)
-                            REFERENCES Venda (NumVenda)
-                            ON DELETE CASCADE
-                            ON UPDATE NO ACTION,
-                        
-                        CONSTRAINT fk_Carros_Estoque1
-                            FOREIGN KEY (NumEstoque)
-                            REFERENCES Estoque (NumEstoque)
-                            ON DELETE CASCADE
-                            ON UPDATE NO ACTION,
                         
                         CONSTRAINT fk_Carros_Modelo1
                             FOREIGN KEY (IDModelo)
@@ -99,6 +53,39 @@ def cadastrar():
                             ON DELETE CASCADE
                             ON UPDATE NO ACTION
                         )ENGINE = InnoDB""")
+        
+        mycursor.execute("""CREATE TABLE IF NOT EXISTS Venda(
+                        NumVenda VARCHAR(45) NOT NULL PRIMARY KEY,
+                        DataVenda VARCHAR(45) NOT NULL,
+                        Valor VARCHAR(45) NOT NULL,
+                        ClienteCPF VARCHAR(45) NOT NULL,
+                        Chassi VARCHAR(45) NOT NULL,
+                        NumParcelas VARCHAR(45) NOT NULL,
+                        VendedorCPF VARCHAR(45) NOT NULL,
+                        
+                        INDEX fk_VENDA_Carros_idx (Chassi ASC),
+                        INDEX fk_VENDA_Cliente_idx (ClienteCPF ASC),
+                        INDEX fk_VENDA_Vendedor1_idx (VendedorCPF ASC),
+                        
+                        CONSTRAINT fk_VENDA_Carros_idx
+                            FOREIGN KEY (Chassi)
+                            REFERENCES Carros (Chassi)
+                            ON DELETE CASCADE
+                            ON UPDATE NO ACTION,
+                        
+                        CONSTRAINT fk_VENDA_Cliente
+                            FOREIGN KEY (ClienteCPF)
+                            REFERENCES Cliente (CPF)
+                            ON DELETE CASCADE
+                            ON UPDATE NO ACTION,
+
+                        CONSTRAINT fk_VENDA_Vendedor1
+                            FOREIGN KEY (VendedorCPF)
+                            REFERENCES Vendedor (CPF)
+                            ON DELETE CASCADE
+                            ON UPDATE NO ACTION
+                    ) ENGINE=InnoDB
+                    """)
     except Exception as erro:
         print("Erro:", erro)
 

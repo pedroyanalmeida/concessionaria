@@ -41,7 +41,6 @@ def Cadastrar_Carros(valores):
         sqlInsert = f"INSERT INTO Carros ({colunas_string}) VALUES ({placeholders})"
 
         mycursor.execute(sqlInsert, valores)
-        mydb.commit()
         mydb.close()
         return True
     except:
@@ -55,7 +54,6 @@ def Update_Carros(carrosKEy, coluna, novo_valor):
         chassi = carrosKEy
         sqlUpdate = f"UPDATE Carros SET {coluna} = %s WHERE Chassi = %s"
         mycursor.execute(sqlUpdate, (novo_valor, chassi))
-        mydb.commit()
         mydb.close()
         return True
     except:

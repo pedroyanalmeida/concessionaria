@@ -1,11 +1,11 @@
-from conexaoBD import conectar
-
-mydb = conectar()
-mycursor = mydb.cursor()
+import conexaoBD
 
 def Listar_Tabelas():
+    mydb = conexaoBD.conectar()
+    mycursor = mydb.cursor()
     mycursor.execute("SHOW TABLES")
     tabelas = mycursor.fetchall()
+    mydb.close()
     return tabelas
 
 def Printar_Tabelas():
@@ -16,65 +16,86 @@ def Printar_Tabelas():
 
 
 def Listar_Atributos(Tabela_Escolhida):
-    tabelas = Listar_Tabelas()
-    
-    if Tabela_Escolhida>0 and Tabela_Escolhida <= len(tabelas):
-        tabela = tabelas[Tabela_Escolhida-1][0]
+    try:
+        mydb = conexaoBD.conectar()
+        mycursor = mydb.cursor()
+        mycursor.execute(f"SHOW COLUMNS FROM {Tabela_Escolhida}")
+        atributos = mycursor.fetchall()
+        mydb.close()
 
-    mycursor.execute(f"SHOW COLUMNS FROM {tabela}")
-    atributos = mycursor.fetchall()
-
-    return atributos
+        return atributos
+    except:
+        return False
 
 def Printar_Atributos(Tabela_Escolhida):
     atributos = Listar_Atributos(Tabela_Escolhida)
     for n in range(len(atributos)):
         print(f"{n+1}-",atributos[n])
 
-def Cadastrar_Atributos(Tabela_Escolhida, atri):
-    tabelas = Listar_Tabelas()
-    
-    if Tabela_Escolhida>0 and Tabela_Escolhida <= len(tabelas):
-        tabela = tabelas[Tabela_Escolhida-1][0]
-        tipo ="VARCHAR(100)"
-                
-        sqlAdd = f"ALTER TABLE {tabela} ADD {atri} {tipo}"
+def Cadastrar_Atributos(Tabela_Escolhida, atributo):
+    try:
+        mydb = conexaoBD.conectar()
+        mycursor = mydb.cursor()
+        
+        tipo ="VARCHAR(100)"        
+        sqlAdd = f"ALTER TABLE {Tabela_Escolhida} ADD {atributo} {tipo}"
         mycursor.execute(sqlAdd)
+        mydb.close()
+        
+        return True
+    except:
+        return False
 
-def Drop_Atributo(tabela_posi, atri):
-    tabelas = Listar_Tabelas()
-    
-    if tabela_posi>0 and tabela_posi <= len(tabelas):
-        tabela = tabelas[tabela_posi-1][0]        
-        atributos = Listar_Atributos(tabela_posi)
+def Drop_Atributo(Tabela_Escolhida, atributo):
+    try:
+        mydb = conexaoBD.conectar()
+        mycursor = mydb.cursor()
+        atri = Listar_Atributos(Tabela_Escolhida)
+        escAtributo = None
 
-        if atributos[tabela_posi-1][3] != "MUL":
-            if atri > 0 and atri < len(atributos):
-                coluna = atributos[atri][0]
-                sqlDrop = f"ALTER TABLE {tabela} DROP COLUMN IF EXISTS {coluna}"
-                mycursor.execute(sqlDrop)
-        else:
-            print("não pode")
+        for at in atri:
+            if at[0] == atributo:
+                escAtributo = atri
+                break
+        if escAtributo[3] not in ("MUL","PRI"):
+            sqlDrop = f"ALTER TABLE {Tabela_Escolhida} DROP COLUMN IF EXISTS {atributo}"
+            mycursor.execute(sqlDrop)
 
-def Rename_Atributo(tabela_posi, atributo_posi, novo_nome):
-    tabelas = Listar_Tabelas()
-    
-    if tabela_posi>0 and tabela_posi <= len(tabelas):
-        tabela = tabelas[tabela_posi-1][0]
+        mydb.close()
+            
+        return True
+    except:
+        return False
+       
 
-        atributos = Listar_Atributos(tabela_posi-1)
+def Rename_Atributo(Tabela_Escolhida, atributo, novo_nome):
+    try:   
+        mydb = conexaoBD.conectar()
+        mycursor = mydb.cursor()
+        atri = Listar_Atributos(Tabela_Escolhida)
+        escAtributo = None
 
-        if atributo_posi > 0 and atributo_posi <= len(atributos):
-            coluna = atributos[atributo_posi][0]
-                    
-            sqlRename = f"ALTER TABLE {tabela} RENAME COLUMN {coluna} TO {novo_nome}"
+        for at in atri:
+            if at[0] == atributo:
+                escAtributo = atri
+                break
+        if escAtributo[3] not in ("MUL","PRI"):             
+            sqlRename = f"ALTER TABLE {Tabela_Escolhida} RENAME COLUMN {atributo} TO {novo_nome}"
             mycursor.execute(sqlRename)
+        mydb.close()
 
-def Drop_Tabela(tabela_posi):
-    tabelas = Listar_Tabelas()
-    
-    if tabela_posi>0 and tabela_posi <= len(tabelas):
-        tabela = tabelas[tabela_posi-1][0]
-    
-        mycursor.execute(f"DROP TABLE IF EXISTS {tabela}")
-        print(f"Tabela {tabela} excluída com sucesso!")
+        return True
+    except:
+        return False
+
+def Drop_Tabela(Tabela_Escolhida):
+    try:
+        mydb = conexaoBD.conectar()
+        mycursor = mydb.cursor()
+        mycursor.execute(f"DROP TABLE IF EXISTS {Tabela_Escolhida}")
+        print(f"Tabela {Tabela_Escolhida} excluída com sucesso!")
+        mydb.close()
+
+        return True
+    except:
+        return False
